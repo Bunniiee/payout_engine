@@ -14,6 +14,7 @@ ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(','
 
 INSTALLED_APPS = [
     'django.contrib.contenttypes',
+    'django.contrib.auth',
     'django.contrib.staticfiles',
     'rest_framework',
     'corsheaders',
@@ -88,3 +89,7 @@ CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'UTC'
 CELERY_BEAT_SCHEDULER = 'celery.beat:PersistentScheduler'
+CELERY_BROKER_TRANSPORT_OPTIONS = {
+    'socket_timeout': 3,
+    'socket_connect_timeout': 3,
+}

@@ -1,5 +1,7 @@
 import uuid
 
+import threading
+
 from django.http import Http404
 from rest_framework import status
 from rest_framework.generics import ListAPIView, RetrieveAPIView
@@ -99,7 +101,12 @@ class PayoutListCreateView(APIView):
             )
 
         if created:
-            process_payout.delay(str(payout.id))
+            def _dispatch():
+                try:
+                    process_payout.apply_async(args=[str(payout.id)], retry=False)
+                except Exception:
+                    pass
+            threading.Thread(target=_dispatch, daemon=True).start()
 
         response_status = status.HTTP_201_CREATED if created else status.HTTP_200_OK
         return Response(PayoutSerializer(payout).data, status=response_status)
