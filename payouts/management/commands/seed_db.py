@@ -44,7 +44,7 @@ class Command(BaseCommand):
                 total = sum(data['credits'])
                 self.stdout.write(
                     self.style.SUCCESS(
-                        f"  Seeded {len(data['credits'])} credits totalling {total} paise (₹{total/100:.2f})"
+                        f"  Seeded {len(data['credits'])} credits totalling {total} paise (INR {total/100:.2f})"
                     )
                 )
             else:
@@ -52,6 +52,6 @@ class Command(BaseCommand):
                 balance = LedgerEntry.objects.filter(merchant=merchant).aggregate(
                     t=Sum('amount_paise')
                 )['t'] or 0
-                self.stdout.write(f"  Current balance: {balance} paise (₹{balance/100:.2f})")
+                self.stdout.write(f"  Current balance: {balance} paise (INR {balance/100:.2f})")
 
         self.stdout.write(self.style.SUCCESS('\nSeed complete.'))
