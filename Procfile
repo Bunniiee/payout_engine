@@ -1,2 +1,1 @@
-web: python manage.py collectstatic --no-input && python manage.py migrate && gunicorn playto.wsgi --bind 0.0.0.0:$PORT --workers 2
-worker: celery -A playto worker --beat --loglevel=info --concurrency=2
+web: bash start.sh
