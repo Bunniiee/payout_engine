@@ -2,7 +2,6 @@
 
 A production-grade payout engine for merchants receiving international payments. Merchants accumulate INR balance from customer payments and withdraw to their Indian bank accounts. The engine handles concurrent payout requests, idempotency, strict state machine transitions, and background processing with automatic retry logic.
 
-**Live API**: https://hearty-charm-production.up.railway.app
 **Live Dashboard**: https://payout-engine-weld.vercel.app
 
 ---
