@@ -59,7 +59,8 @@ def retry_stuck_payouts():
                 payout.status = Payout.PENDING
                 payout.processing_started_at = None
                 payout.save(update_fields=['status', 'processing_started_at', 'updated_at'])
-                process_payout.delay(str(payout.id))
+                payout_id = str(payout.id)
+                transaction.on_commit(lambda pid=payout_id: process_payout.delay(pid))
             else:
                 payout.transition_to(Payout.FAILED)
                 LedgerEntry.objects.create(
