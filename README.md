@@ -1,18 +1,19 @@
-# Playto Payout Engine
+# Payout Engine
 
-A production-grade payout engine for Indian merchants receiving international payments. Merchants accumulate INR balance and withdraw to their bank accounts. Built as a Founding Engineer technical assessment for Playto Pay.
+A production-grade payout engine for merchants receiving international payments. Merchants accumulate INR balance from customer payments and withdraw to their Indian bank accounts. The engine handles concurrent payout requests, idempotency, strict state machine transitions, and background processing with automatic retry logic.
 
-**Live URL**: _to be filled after Railway deployment_
+**Live API**: https://hearty-charm-production.up.railway.app
+**Live Dashboard**: https://payout-engine-weld.vercel.app
 
 ---
 
 ## Stack
 
 - **Backend**: Django 4.2 + Django REST Framework
-- **Database**: PostgreSQL 15 (amounts stored as BigIntegerField in paise — no floats)
-- **Queue**: Celery 5.3 + Redis 7
+- **Database**: PostgreSQL (amounts stored as BigIntegerField in paise — no floats)
+- **Queue**: Celery 5.3 + Redis
 - **Frontend**: React 18 + Vite + Tailwind CSS
-- **Deployment**: Railway (web + worker + beat via Procfile)
+- **Deployment**: Railway (backend + celery worker + beat scheduler) + Vercel (frontend)
 
 ---
 
@@ -27,8 +28,8 @@ A production-grade payout engine for Indian merchants receiving international pa
 ### 1. Clone and create environment
 
 ```bash
-git clone <repo-url>
-cd payment_infra
+git clone https://github.com/Bunniiee/payout_engine.git
+cd payout_engine
 cp .env.example .env
 # Edit .env with your DB and Redis credentials
 ```
@@ -112,17 +113,15 @@ Two tests:
 2. Add **PostgreSQL** plugin and **Redis** plugin
 3. Connect your GitHub repository
 4. Set environment variables in Railway dashboard (see `.env.example`)
-5. Railway uses the `Procfile` automatically:
-   ```
-   web:    gunicorn playto.wsgi --bind 0.0.0.0:$PORT --workers 2
-   worker: celery -A playto worker --loglevel=info --concurrency=2
-   beat:   celery -A playto beat --loglevel=info
-   ```
-6. After first deploy, run seed:
-   ```bash
-   railway run python manage.py seed_db
-   ```
-7. Build and deploy the `frontend/` as a static site (or serve via a separate Railway service)
+5. Set the **Start Command** to `bash start.sh` — this runs collectstatic, migrate, seed, celery+beat, and gunicorn
+6. Set the **Port** in Railway networking settings to match the `PORT` env var (default 8080)
+
+## Vercel Deployment (Frontend)
+
+1. Connect the GitHub repository to Vercel
+2. Set **Root Directory** to `frontend`
+3. Add environment variable: `VITE_API_URL=https://<your-railway-domain>.up.railway.app`
+4. Deploy
 
 ---
 
